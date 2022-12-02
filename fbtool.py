@@ -16,9 +16,9 @@ def check_authenticate_info():
     if token == 'access_token':
         print("user access_token haven't been set!")
         return;
-    if user_id == 'user_id':
-        print("user id haven't been'set!")
-        return;
+    # if user_id == 'user_id':
+    #     print("user id haven't been'set!")
+    #     return;
 
 def get_and_save_uid(option, opt_str, value, parser):
     PARAMS = {'fields':'id', 'access_token':token}
