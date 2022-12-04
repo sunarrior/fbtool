@@ -82,7 +82,6 @@ def get_reaction_count(post_id, type):
     return reaction_count_json
 
 def summary_reactions_on_one_post(option, opt_str, value, parser):
-    check_authenticate_info()
     if parser.values.p == None:
         print("missing -p argument")
         return
@@ -208,4 +207,5 @@ def main():
 
 # =================================================
 if __name__ == "__main__":
+    check_authenticate_info()
     main()
