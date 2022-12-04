@@ -96,50 +96,7 @@ def summary_reactions_on_one_post(option, opt_str, value, parser):
     )
     if reaction_count != None:
         print(reaction_count)
-
-def get_post_ids(option, opt_str, value, parser):
-    PARAMS = {'fields':'feed', 'access_token':token}
-    data = requests.get(url = URL + '/me', params = PARAMS).json()
-
-    arr = []
-    for feed in data['feed']['data']:
-        del feed['created_time']
-        arr.append(feed)
-    post_ids = {
-        'quantity':len(data['feed']['data']),
-        'info': arr
-    }
-    with open("./data/post_ids.json", "w+") as outfile:
-        json.dump(post_ids, outfile, indent=4)
-    print(f"Post ids: {post_ids}")
     
-def get_info_user(option, opt_str, value, parser):
-    PARAMS_NAME = {'fields':'name', 'access_token':token_info}
-    PARAMS_BIRTHDAY = {'fields':'birthday', 'access_token':token_info}
-    PARAMS_EMAIL = {'fields':'email', 'access_token':token_info}
-    PARAMS_LOCATION = {'fields':'location', 'access_token':token_info}
-    PARAMS_GENDER = {'fields':'gender', 'access_token':token_info}
-
-    user_name = requests.get(url = URL + '/me', params = PARAMS_NAME).json()
-    birthday = requests.get(url = URL + '/me', params = PARAMS_BIRTHDAY).json()
-    email = requests.get(url = URL + '/me', params = PARAMS_EMAIL).json()
-    location = requests.get(url = URL + '/me', params = PARAMS_LOCATION).json()
-    gender = requests.get(url = URL + '/me', params = PARAMS_GENDER).json()
-
-    print(f"Get username: {user_name['name']}")
-    print(f"Get gender: {gender['gender']}")
-    print(f"Get birthday: {birthday['birthday']}")
-    print(f"Get email: {email['email']}")
-    print(f"Get location: {location['location']['name']}")
-
-def video_upload_limits(option, opt_str, value, parser):
-    PARAMS = {'fields':'video_upload_limits', 'access_token':token}
-    data = requests.get(url = URL + '/me', params = PARAMS).json()
-
-    dotenv.set_key(dotenv_file, "VIDEO_UPLOAD_LIMITED_LENGTH", str(data['video_upload_limits']['length']))
-    dotenv.set_key(dotenv_file, "VIDEO_UPLOAD_LIMITED_SIZE", str(data['video_upload_limits']['size']))
-    print(f"Video upload limits: {str(data['video_upload_limits']['length'])} & {str(data['video_upload_limits']['size'])}")
-
 def get_albums(option, opt_str, value, parser):
     PARAMS = {'fields':'albums', 'access_token':token}
     data = requests.get(url = URL + '/me', params = PARAMS).json()
@@ -193,6 +150,25 @@ def get_music_like(option, opt_str, value, parser):
         json.dump(musics_liked, outfile, indent=4)
     print(f"Musics liked: {musics_liked}")
 
+def get_info_user(option, opt_str, value, parser):
+    PARAMS_NAME = {'fields':'name', 'access_token':token_info}
+    PARAMS_BIRTHDAY = {'fields':'birthday', 'access_token':token_info}
+    PARAMS_EMAIL = {'fields':'email', 'access_token':token_info}
+    PARAMS_LOCATION = {'fields':'location', 'access_token':token_info}
+    PARAMS_GENDER = {'fields':'gender', 'access_token':token_info}
+
+    user_name = requests.get(url = URL + '/me', params = PARAMS_NAME).json()
+    birthday = requests.get(url = URL + '/me', params = PARAMS_BIRTHDAY).json()
+    email = requests.get(url = URL + '/me', params = PARAMS_EMAIL).json()
+    location = requests.get(url = URL + '/me', params = PARAMS_LOCATION).json()
+    gender = requests.get(url = URL + '/me', params = PARAMS_GENDER).json()
+
+    print(f"Get username: {user_name['name']}")
+    print(f"Get gender: {gender['gender']}")
+    print(f"Get birthday: {birthday['birthday']}")
+    print(f"Get email: {email['email']}")
+    print(f"Get location: {location['location']['name']}")
+
 def get_favorite_teams(option, opt_str, value, parser):
     PARAMS_FAVORITE = {'fields':'favorite_teams', 'access_token':token_favorite}
     user_favorite = requests.get(url = URL + '/me', params = PARAMS_FAVORITE).json()
@@ -203,38 +179,28 @@ def get_favorite_teams(option, opt_str, value, parser):
 # ============= Command Line Function =============
 def main():
     parser = OptionParser()
-    parser.add_option("--get_uid", action="callback", callback=get_and_save_uid,
+    parser.add_option("--uid", action="callback", callback=get_and_save_uid,
                         help="get and save user id")
-    parser.add_option("--get_post_on_feed", action="callback", callback=show_post_list,
+    parser.add_option("--feed", action="callback", callback=show_post_list,
                         help="show post id on feed")
-    parser.add_option("--get_one_post_react", action="callback", callback=summary_reactions_on_one_post,
+    parser.add_option("--react", action="callback", callback=summary_reactions_on_one_post,
                         help="-p [post_id] -t [type_reaction] --get_one_post_react, \n \
                                 show reaction count in one post")
     parser.add_option("-p", help="set post id")
     parser.add_option("-t", help="set type of reaction [Like, Love, Thankful, Haha, Wow, Sad, Angry] \
                                     can be multiple type (ex: haha,love)"
-                                    )
-
-    # ================== Kashuken ==================                    
-    parser.add_option("--viupli", action="callback", callback=video_upload_limits,
-                        help="video upload limits")
+                                    )                   
     parser.add_option("--albums", action="callback", callback=get_albums,
                         help="get albums")                    
-    parser.add_option("--feed", action="callback", callback=get_post_ids,
-                        help="get post ids")
     parser.add_option("--friends", action="callback", callback=get_total_friends,
                         help="get total friends")
     parser.add_option("--pages", action="callback", callback=get_pages_like,
                         help="get pages liked")
     parser.add_option("--music", action="callback", callback=get_music_like,
                         help="get music liked")
-
-
-    parser.add_option("--showuid", action="callback", callback=print_uid,
-                        help="show user id")
-    parser.add_option("--getsuinfo", action="callback", callback=get_info_user,
+    parser.add_option("--userinfo", action="callback", callback=get_info_user,
                         help="show user information")
-    parser.add_option("--getsufavorite", action="callback", callback=get_favorite_teams,
+    parser.add_option("--favorite", action="callback", callback=get_favorite_teams,
                         help="show favorite")
 
     (options, args) = parser.parse_args()
